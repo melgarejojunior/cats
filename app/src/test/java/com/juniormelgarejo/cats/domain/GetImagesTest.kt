@@ -24,10 +24,10 @@ class GetImagesTest {
         // Given
         val apiResponse = Gson().fromJson<ApiResponse>(rawInput, ApiResponse::class.java)
         val mockedClient = Mockito.mock(ApiClient::class.java)
-        Mockito.`when`(mockedClient.search("cats")).thenReturn(Single.just(apiResponse))
+        Mockito.`when`(mockedClient.search(DEFAULT_QUERY)).thenReturn(Single.just(apiResponse))
         val getImages = GetImages(mockedClient)
         // When
-        val testObserver = getImages.execute("cats").test()
+        val testObserver = getImages.execute(DEFAULT_QUERY).test()
         // Then
         testObserver.assertComplete()
         testObserver.assertResult(Result(answer))

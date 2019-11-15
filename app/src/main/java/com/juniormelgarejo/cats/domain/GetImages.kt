@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetImages @Inject constructor(
     private val apiClient: ApiClient
 ) {
-    fun execute(query: String = "cat"): Single<Result> {
+    fun execute(query: String = DEFAULT_QUERY): Single<Result> {
         return apiClient.search(query).map { apiResponse ->
             Result(
                 apiResponse.data.map { resultObject ->
@@ -21,7 +21,7 @@ class GetImages @Inject constructor(
 
     private fun filterJustImages(it: ApiImage): String? {
         return it.link?.run {
-            if (contains(".mp4")) null else this
+            if (contains(VIDEO_FORMAT)) null else this
         }
     }
 }

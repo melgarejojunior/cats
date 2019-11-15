@@ -32,14 +32,18 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AndroidInjection.inject(this)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        lifecycle.addObserver(viewModel)
+        initVars()
         setupView()
         subscribeUi()
     }
 
     override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
+
+    private fun initVars() {
+        AndroidInjection.inject(this)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        lifecycle.addObserver(viewModel)
+    }
 
     private fun subscribeUi() {
         viewModel.items.observe(this, Observer {
@@ -70,7 +74,6 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
         with(binding.recyclerView) {
             adapter = mainAdapter
             layoutManager = FlexboxLayoutManager(context).apply {
-
                 flexDirection = FlexDirection.ROW
                 justifyContent = JustifyContent.CENTER
             }

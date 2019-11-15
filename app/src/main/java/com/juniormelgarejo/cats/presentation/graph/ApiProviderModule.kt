@@ -8,10 +8,7 @@ import com.juniormelgarejo.cats.data.ApiClient
 import com.juniormelgarejo.cats.data.ApiService
 import dagger.Module
 import dagger.Provides
-import dagger.multibindings.IntoSet
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
@@ -19,23 +16,6 @@ import javax.inject.Singleton
 
 @Module
 object ApiProviderModule {
-    @JvmStatic
-    @Provides
-    @IntoSet
-    fun provideHttpLoggingInterceptor(logLevel: HttpLoggingInterceptor.Level): Interceptor {
-        return HttpLoggingInterceptor().setLevel(logLevel)
-    }
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(interceptors: Set<@JvmSuppressWildcards Interceptor>): OkHttpClient {
-        val okHttpClientBuilder = OkHttpClient.Builder()
-        for (interceptor in interceptors) {
-            okHttpClientBuilder.addInterceptor(interceptor)
-        }
-        return okHttpClientBuilder.build()
-    }
 
     @JvmStatic
     @Provides
@@ -63,13 +43,12 @@ object ApiProviderModule {
     @Provides
     @Singleton
     fun provideRetrofit(
-        okHttpClient: OkHttpClient,
         rxJavaCallAdapterFactory: RxJava2CallAdapterFactory,
         gson: Gson,
         @Named(API_ENDPOINT_NAMED) apiEndPoint: String
     ): Retrofit {
         return Retrofit.Builder()
-            .client(okHttpClient)
+            .client(OkHttpClient.Builder().build())
             .baseUrl(apiEndPoint)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(rxJavaCallAdapterFactory)
@@ -88,17 +67,6 @@ object ApiProviderModule {
     @Singleton
     fun provideApiClient(apiService: ApiService): ApiClient {
         return ApiClient(apiService)
-    }
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideLogLevel(): HttpLoggingInterceptor.Level {
-        return if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor.Level.BODY
-        } else {
-            HttpLoggingInterceptor.Level.NONE
-        }
     }
 
     private const val API_ENDPOINT_NAMED = "API_ENDPOINT_NAMED"

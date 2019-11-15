@@ -32,7 +32,6 @@ class MainViewModel @Inject constructor(
             .subscribeBy(::onError) {
                 _items.postValue(it.images)
             }
-
     }
 
     private fun onError(throwable: Throwable) {
