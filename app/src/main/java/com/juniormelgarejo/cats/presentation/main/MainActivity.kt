@@ -7,8 +7,12 @@ import androidx.lifecycle.Observer
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import com.google.android.material.snackbar.Snackbar
 import com.juniormelgarejo.cats.R
+import com.juniormelgarejo.cats.data.entity.RequestException
 import com.juniormelgarejo.cats.databinding.ActivityMainBinding
+import com.juniormelgarejo.cats.domain.entity.Error
+import com.juniormelgarejo.cats.presentation.util.EventObserver
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -41,6 +45,24 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
         viewModel.items.observe(this, Observer {
             mainAdapter?.setItems(it)
         })
+        viewModel.snackText.observe(this, EventObserver {
+            createErrorSnackbar(it)
+        })
+    }
+
+    private fun createErrorSnackbar(error: Error) {
+        Snackbar.make(binding.root, resolveError(error.exception), Snackbar.LENGTH_INDEFINITE)
+            .setAction(R.string.try_again) { error.action?.invoke() }
+            .show()
+    }
+
+    private fun resolveError(exception: RequestException): String {
+        return when (exception) {
+            is RequestException.TimeoutError -> getString(R.string.timeout_error)
+            is RequestException.UnexpectedError -> getString(R.string.unexpected_error)
+            is RequestException.NetworkError -> getString(R.string.network_error)
+            else -> exception.errorMessage
+        }
     }
 
     private fun setupView() {

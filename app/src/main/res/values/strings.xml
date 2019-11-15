@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Cats</string>
+    <string name="try_again">Tentar Novamente</string>
+    <string name="timeout_error">O servidor demorou muito para responder</string>
+    <string name="unexpected_error">Ops... Tente Novamente mais tarde</string>
+    <string name="network_error">Sem conexão</string>
 </resources>
