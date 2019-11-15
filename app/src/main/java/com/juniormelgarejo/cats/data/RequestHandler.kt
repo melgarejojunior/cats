@@ -1,7 +1,6 @@
 package com.juniormelgarejo.cats.data
 
 import com.juniormelgarejo.cats.data.entity.RequestException
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.SingleTransformer
 import retrofit2.Response
@@ -16,17 +15,6 @@ open class RequestHandler {
             .compose(unwrap())
     }
 
-    protected fun <T> makeCompletableRequest(request: Single<Response<T>>): Completable {
-        return request.compose(verifyRequestException())
-            .ignoreElement()
-    }
-
-    protected fun <T> justVerifyErrors(request: Single<Response<T>>): Completable {
-        return request.compose(verifyResponseException())
-            .compose(verifyRequestException())
-            .ignoreElement()
-    }
-
     private fun <T> unwrap(): SingleTransformer<Response<T>, T> {
         return SingleTransformer { upstream ->
             upstream.map(Response<T>::body)
@@ -38,10 +26,9 @@ open class RequestHandler {
             upstream.onErrorResumeNext { t ->
                 Single.error(
                     when (t) {
-                        is RequestException -> t
                         is SocketTimeoutException -> RequestException.TimeoutError
-                        is UnknownHostException -> RequestException.UnexpectedError
-                        is IOException -> RequestException.NetworkError
+                        is UnknownHostException -> RequestException.NetworkError
+                        is IOException -> RequestException.UnexpectedError
                         else -> RequestException.UnexpectedError
                     }
                 )
