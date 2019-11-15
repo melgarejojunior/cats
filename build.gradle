@@ -8,6 +8,7 @@ buildscript {
         apiStaging = "http://staging.api.apptemplate.com.br/"
         apiVersion = "v1/"
         glideVersion = '4.4.0'
+        daggerVersion = '2.24'
         archLifecycleVersion = '1.1.1'
     }
 

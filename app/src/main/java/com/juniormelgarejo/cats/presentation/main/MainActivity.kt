@@ -1,10 +1,12 @@
-package com.juniormelgarejo.cats.presentation
+package com.juniormelgarejo.cats.presentation.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.juniormelgarejo.cats.R
 
 class MainActivity : AppCompatActivity() {
+
+    @
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
