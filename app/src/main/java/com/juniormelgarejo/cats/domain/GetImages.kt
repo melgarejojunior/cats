@@ -1,6 +1,7 @@
 package com.juniormelgarejo.cats.domain
 
 import com.juniormelgarejo.cats.data.ApiClient
+import com.juniormelgarejo.cats.data.entity.ApiImage
 import com.juniormelgarejo.cats.domain.entity.Result
 import io.reactivex.Single
 import javax.inject.Inject
@@ -8,13 +9,19 @@ import javax.inject.Inject
 class GetImages @Inject constructor(
     private val apiClient: ApiClient
 ) {
-    fun execute(query: String): Single<Result> {
+    fun execute(query: String = "cat"): Single<Result> {
         return apiClient.search(query).map { apiResponse ->
-            Result(apiResponse.data.map { resultObject ->
-                resultObject.images.map {
-                    it.link ?: ""
-                }
-            }.flatten())
+            Result(
+                apiResponse.data.map { resultObject ->
+                    resultObject.images.mapNotNull { filterJustImages(it) }
+                }.flatten()
+            )
+        }
+    }
+
+    private fun filterJustImages(it: ApiImage): String? {
+        return it.link?.run {
+            if (contains(".mp4")) null else this
         }
     }
 }
